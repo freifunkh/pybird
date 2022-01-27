@@ -513,13 +513,20 @@ bogus undo:
 
         for line in lineiterator:
             line = line.strip()
-            (field, value) = line.split(":", 1)
+            try:
+                (field, value) = line.split(":", 1)
+            except ValueError:
+                continue
             value = value.strip()
 
             if field.lower() == "routes":
-                routes = self.routes_field_re.findall(value)[0]
-                result['routes_imported'] = int(routes[0])
-                result['routes_exported'] = int(routes[1])
+                try:
+                    routes = self.routes_field_re.findall(value)[0]
+                    result['routes_imported'] = int(routes[0])
+                    result['routes_exported'] = int(routes[1])
+                except IndexError:
+                    result['routes_imported'] = -1
+                    result['routes_exported'] = -1
 
             if field.lower() in route_change_fields:
                 (received, rejected, filtered, ignored, accepted) = value.split()
